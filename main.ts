@@ -1,4 +1,5 @@
-import { nanoid, router, serve, snippets } from "./deps.ts";
+import { nanoid, router, serve } from "./deps.ts";
+import { snippets } from "./database.ts";
 
 const retrieveSnippet = async (_req) => {
   const identifier = _req.url.split("/").pop();
