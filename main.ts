@@ -1,7 +1,4 @@
-import { serve } from "https://deno.land/std@0.114.0/http/server.ts";
-import { router } from "https://crux.land/router@0.0.12";
-import { nanoid } from "https://deno.land/x/nanoid/mod.ts";
-import { snippets } from "./database.ts";
+import { nanoid, router, serve, snippets } from "./deps.ts";
 
 const retrieveSnippet = async (_req) => {
   const identifier = _req.url.split("/").pop();
