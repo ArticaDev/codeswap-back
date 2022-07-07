@@ -1,15 +1,19 @@
-import { nanoid, router, serve } from "./deps.ts";
+import { Application, nanoid, oakCors, Router } from "./deps.ts";
 import { snippets } from "./database.ts";
 
-const retrieveSnippet = async (_req) => {
-  const identifier = _req.url.split("/").pop();
-  const snippet = await snippets.findOne({ identifier: identifier });
+const retrieveSnippet = async (
+  { params, response }: { params: { id: string }; response: any },
+) => {
+  const snippet = await snippets.findOne({ identifier: params.id });
 
-  return new Response(JSON.stringify(snippet), { status: 200 });
+  response.body = JSON.stringify(snippet);
 };
 
-const saveSnippet = async (_req) => {
-  const snippet = await _req.json();
+const saveSnippet = async (
+  { request, response }: { request: any; response: any },
+) => {
+  let snippet = await request.body();
+  snippet = await snippet.value;
   const identifier = nanoid(8);
 
   await snippets.insertOne({
@@ -19,12 +23,19 @@ const saveSnippet = async (_req) => {
     title: snippet.title,
   });
 
-  return new Response(JSON.stringify({ id: identifier }), { status: 200 });
+  response.body = JSON.stringify({ id: identifier });
 };
 
-const handler = router({
-  "GET@/:id": (_req) => retrieveSnippet(_req),
-  "POST@/": (_req) => saveSnippet(_req),
-});
+const app = new Application();
+const port: number = Deno.env.get("PORT") || 8080;
 
-await serve(handler);
+const router = new Router();
+
+router.get("/:id", retrieveSnippet);
+router.post("/", saveSnippet);
+
+app.use(oakCors());
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+await app.listen({ port });
