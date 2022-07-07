@@ -27,7 +27,7 @@ const saveSnippet = async (
 };
 
 const app = new Application();
-const port: number = Deno.env.get("PORT") || 8080;
+const port: number = Deno.env.get("PORT") || 8000;
 
 const router = new Router();
 
